@@ -1,0 +1,53 @@
+{
+	"Comment": "An example of the Amazon States Language using a Parallel and a Choice state to execute two branches at the same time.",
+	"StartAt": "StartTask",
+	"States": {
+		"StartTask": {
+			"Type": "Parallel",
+			"Next": "CWMetric",
+			"Branches": [
+				{
+					"StartAt": "Gen Report",
+					"States": {
+						"Gen Report": {
+							"Type": "Task",
+							"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:GenerateReport",
+							"End": true
+						}
+					}
+				},
+				{
+					"StartAt": "UpdateDB",
+					"States": {
+					"UpdateDB": {
+						"Type": "Choice",
+						"Choices": [
+							{
+								"Variable": "$.level",
+								"StringEquals": "latest",
+								"Next": "Last Level"
+							}
+						],
+						"Default": "Simple Level"
+					},
+					"Last Level": {
+						"Type": "Task",
+						"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:EndsLastLevel",
+						"End": true
+					},
+						"Simple Level": {
+							"Type": "Task",
+							"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:EndsSimpleLevel",
+							"End": true
+						}
+					}
+				}
+			]
+		},
+		"CWMetric": {
+			"Type": "Task",
+			"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:PutMetric",
+			"End": true
+		}
+	}
+}
