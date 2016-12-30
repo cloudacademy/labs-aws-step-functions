@@ -5,29 +5,25 @@
 		"StartTask": {
 			"Type": "Parallel",
 			"Next": "CWMetric",
-			"Branches": [
-				{
-					"StartAt": "Gen Report",
-					"States": {
-						"Gen Report": {
-							"Type": "Task",
-							"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:GenerateReport",
-							"End": true
-						}
+			"Branches": [{
+				"StartAt": "Gen Report",
+				"States": {
+					"Gen Report": {
+						"Type": "Task",
+						"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:GenerateReport",
+						"End": true
 					}
-				},
-				{
-					"StartAt": "UpdateDB",
-					"States": {
+				}
+			}, {
+				"StartAt": "UpdateDB",
+				"States": {
 					"UpdateDB": {
 						"Type": "Choice",
-						"Choices": [
-							{
-								"Variable": "$.level",
-								"StringEquals": "latest",
-								"Next": "Last Level"
-							}
-						],
+						"Choices": [{
+							"Variable": "$.level",
+							"StringEquals": "latest",
+							"Next": "Last Level"
+						}],
 						"Default": "Simple Level"
 					},
 					"Last Level": {
@@ -35,14 +31,13 @@
 						"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:EndsLastLevel",
 						"End": true
 					},
-						"Simple Level": {
-							"Type": "Task",
-							"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:EndsSimpleLevel",
-							"End": true
-						}
+					"Simple Level": {
+						"Type": "Task",
+						"Resource": "arn:aws:lambda:us-west-2:ACCOUNT_ID:function:EndsSimpleLevel",
+						"End": true
 					}
 				}
-			]
+			}]
 		},
 		"CWMetric": {
 			"Type": "Task",
